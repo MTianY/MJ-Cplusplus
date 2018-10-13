@@ -360,12 +360,14 @@ const int age = 10;
 int age = 10;
 
 // *p0是常量,不能修改. p0不是常量,可以修改
+// 不能通过指针修改所指向的内容
 const int *p0 = &age;       // const 修饰的是 *p0
 
 // *p1是常量, p1不是常量
 int const *p1 = &age;       // const 修饰 *p1
 
 // p2是常量, *p2 不是常量
+// 不能修改指针的指向,但是可以通过指针修改所指向的内容
 int * const p2 = &age;  // const 修饰 p2
 
 // p3是常量, *p3不是常量
@@ -381,7 +383,144 @@ int const * const p4 = &age; // 第一个 const 修饰 *p4 . 第二个 const 修
 
 引用通过`const` 修饰,这样就无法修改数据了,称为`常引用`.
 
+```c++
+int age = 10;
+const int &rAge = age;
+// 上面是常引用,就不能通过引用来改 age 的值了.所以下面会报错
+rAge = 30;
+```
+
 - `const`必须写在 `&` 符号的左边.才算常引用.
 
+下面代码, rAge 可以修改 age 的值,这就牵涉到引用的本质问题,引用的本质其实就是指针.
 
+##### const 引用的特点
+
+- 可以指向临时数据(常量/表达式/函数返回值等).
+
+常量:
+
+```c++
+int age = 10;
+// ✘ 正常这代码是不被允许的, 报错
+int &rAge = 40;
+
+// √ 正确写法
+int const &rAge = 40;
+```
+
+表达式:
+
+```c++
+int a = 20;
+int b = 30;
+    
+int age = 10;
+// ✘ 报错
+int &rAge = a + b;
+
+// √ 正确
+const int &rAge = a +b;
+```
+
+函数返回值
+
+```c++
+int func11() {
+    return 10;
+}
+
+int main() {
+    int a = 20;
+    int b = 30;
+    
+    int age = 10;
+    
+    // ✘ 错误
+    int &rAge = func11();
+    
+    // √ 正确
+    const int &rAge = func11();
+}
+```
+
+- 可以指向不同类型的数据:
+
+```c++
+int main() {
+    
+    int a = 20;
+    int b = 30;
+    int age = 10;
+    
+    // ✘ 错误
+    double &ref = age;
+    
+    // √ 正确
+    const double &ref = age;
+}
+```
+
+- 作为函数参数时 (此规则同样适用于`const`指针)
+    - 可以接受`const`和`非 const`实参(非 `const` 引用, 只能接受非 `const` 实参).
+
+    ```c++
+    int sum4(int &a, int &b) {
+        return a + b;
+    }
+    
+    int main() {
+        int v1 = 10;
+        int v2 = 20;
+        sum4(v1, v2);
+        
+        const int v3 = 10;
+        const int v4 = 20;
+        // 这么写会报错
+        // 因为函数 sum4 的参数是引用,说明我可以在 sum4 这个函数里,拿到 a 来修改.而这里 v3 和 v4是常量,不能修改,有冲突
+        sum4(v3, v4);
+        
+        // 也会报错.因为上面是引用
+        sum4(50, 60);
+    }
+    ```
+    
+    如果希望能接受上面的错误情况.改为如下:
+    
+    ```c++
+    int sum4(const int a, const int b) {
+        return a + b;
+    }
+    ```
+    
+    - 作为函数参数时: `const 引用`可以和`非 const 引用`的函数构成重载 
+     
+    ```c++
+    int sum(int &a, int &b) {
+        cout << "sum(int &a, int &b)" << endl;
+        return a + b;
+    }
+    
+    int sum(const int &a, const int &b) {   
+        cout << sum(const int &a, const int &b)"" << endl;
+        return a + b;
+    }
+    ```
+
+必须是引用才能构成重载, 下面就不行
+
+```c++
+/// ✘ 这会报错!!!
+
+
+int sum(int a, int b) {
+        cout << "sum(int &a, int &b)" << endl;
+        return a + b;
+    }
+    
+    int sum(const int a, const int b) {   
+        cout << sum(const int &a, const int &b)"" << endl;
+        return a + b;
+    }
+```
 

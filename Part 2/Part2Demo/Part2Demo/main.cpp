@@ -63,16 +63,61 @@ void swap1(int &a, int &b) {
     int temp = a;
     a = b;
     b = temp;
+    
 }
+
+int func11() {
+    return 10;
+}
+
+int sum4(const int &a, const int &b) {
+    return a + b;
+}
+
+//int sum5(const int a, const int b) {
+//    return a + b;
+//}
 
 int main() {
     
-    int age = 10;
-    const int *p0 = &age;
-    int const *p1 = &age;
-    int * const p2 = &age;
-    const int * const p3 = &age;
-    int const * const p4 = &age;
+    int v1 = 10;
+    int v2 = 20;
+    
+//    sum4(v1, v2);
+    cout << "sum4(v1, v2) = " << sum4(v1, v2) << endl;
+    
+//    const int v3 = 10;
+//    const int v4 = 20;
+    int v3 = 50;
+    int v4 = 20;
+//    sum4(v3, v4);
+    cout << "sum4(v3, v4) = " << sum4(v3, v4) << endl;
+
+    
+//    int a = 20;
+//    int b = 30;
+//
+//    int age = 10;
+////    int &rAge = func11();
+//
+//   const double &ref = age;
+    
+//    int age = 10;
+//    int const &rAge = 30;
+    
+//    // 常引用
+//    int age = 10;
+//    int const &rAge = age;
+//    rAge = 30;
+    
+    // const
+    
+//    int age = 10;
+//    const int *p0 = &age;
+//    int const *p1 = &age;
+//    int * const p2 = &age;
+//    const int * const p3 = &age;
+//    int const * const p4 = &age;
     
     
 //    int v1 = 10;
