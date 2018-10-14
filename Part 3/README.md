@@ -289,5 +289,78 @@ mov rax,qword ptr [rbp+28h]
 mov dword ptr [rax],6
 ```
 
-这个汇编,和指针的汇编代码一模一样的.所以说引用的本质就是指针.``
+这个汇编,和指针的汇编代码一模一样的.所以说引用的本质就是指针.
+
+#### 当常指针指向了不同类型的数据时,会产生临时变量,即引用指向的并不是初始化时的那个变量:
+
+看下面两个代码的打印结果:
+
+```c++
+#include <iostream>
+using namespace std;
+
+int main () {
+    
+    int age = 10;
+    const int &rAge = age;
+    age = 30;
+    
+    cout << "age is = " << age << endl;
+    cout << "rAge is = " << rAge << endl;
+    
+    return 0;
+    
+}
+
+// 因为常引用不能修改了,就是说不能通过rAge 修改 age 的值.
+// 但是 age 本身是变量,可以改的.
+// rAge 本身就是个指针,引用的本身就是指针, age 改了之后,它还是指向着 age, 所以打印还是30.
+
+
+// 打印结果:
+age is = 30
+rAge is = 30
+```
+
+将上面的代码改动一下, 再看打印结果,分析为什么打印结果变了?
+
+```c++
+int main () {
+    
+    int age = 10;
+//    const int &rAge = age;
+    const long &rAge = age;
+    age = 30;
+    
+    cout << "age is = " << age << endl;
+    cout << "rAge is = " << rAge << endl;
+    
+    return 0;
+    
+}
+
+// 打印结果:
+age is = 30
+rAge is = 10
+```
+
+其汇编如下:
+
+```c
+mov dword ptr [ebp-oCh],0Ah
+mov eax,dword ptr [ebp-0Ch]
+mov dword ptr [ebp-24h],eax
+lea ecx,[ebp-24h]
+mov dword ptr [ebp-18h],ecx
+mov dword ptr [ebp-0Ch],1Eh
+```
+
+上面的汇编其实就像下面的代码:
+
+```c++
+int age = 10;
+int temp = age;
+const long &rAge = temp;
+age = 30;
+```
 
