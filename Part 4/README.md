@@ -93,19 +93,79 @@ pPerson ->run();
 如下代码,看其在内存中的布局情况;
 
 ```c++
+struct TYPerson {
+
+    int m_id;
+    int m_age;
+    int m_height;
+    
+    void display() {
+        cout << "m_id is = " << m_id << endl;
+        cout << "m_age is = " << m_age << endl;
+        cout << "m_height is = " << m_height << endl;
+    }
+
+};
 int main() {
     
     TYPerson person;
-    person.m_age = 20;
-    person.run();
+    person.m_id = 1;
+    person.m_age = 2;
+    person.m_height = 3;
     
-    TYPerson *pPerson = &person;
-    pPerson->m_age = 30;
-    pPerson->run();
+    cout << "&person 对象内存地址: " << &person << endl;
     
+    cout << "&person.m_id 地址: " << &person.m_id << endl;
+    
+    cout << "&person.m_age 地址: " << &person.m_age << endl;
+    
+    cout << "&person.m_height 地址: " << &person.m_height << endl;
+        
     return 0;
 }
 ```
+
+打印上面的对象内存地址,可以看出, `m_id`和`m_age`和`m_height`这三个成员在内存中是连续的.
+
+内存图:
+
+![](https://lh3.googleusercontent.com/-B6SF-MpjxnQ/W8RebAt8rUI/AAAAAAAAAOc/SaNnIWRc2Is5xZ_JOmZxyrq5WqIj7geawCHMYCw/I/15395958775971.jpg)
+
+## this
+
+- this 是指向`当前对象`的指针.
+- 对象在调用成员函数的时候,会自动传入当前对象的内存地址.
+
+上面的 TYPerson 类的成员函数其实就是下面的
+
+```c++
+struct TYPerson {
+    
+    int m_id;
+    int m_age;
+    int m_height;
+    
+    void display() {
+        cout << "m_id is " << this->m_id << endl;
+        cout << "m_age is " << this->m_age << endl;
+        cout << "m_height is " << this->m_height << endl;
+    }
+    
+};
+```
+
+函数的代码在内存中只有一份!存在代码区.每个函数都有内存地址,用的时候直接`call 内存地址`.
+
+执行 display 函数要去代码区找代码,而`m_id`等存在栈空间,就是代码区的代码要访问栈空间的东西,所以,将 person 对象的地址值传给 display 这个函数就好了.
+
+一个应用在内存中的分区:
+
+- 栈空间
+- 堆空间
+- 代码区
+- 全局区
+
+
     
      
 
