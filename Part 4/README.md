@@ -134,7 +134,7 @@ int main() {
 ## this
 
 - this 是指向`当前对象`的指针.
-- 对象在调用成员函数的时候,会自动传入当前对象的内存地址.
+- 对象在调用成员函数的时候,`会自动传入当前对象的内存地址`.
 
 上面的 TYPerson 类的成员函数其实就是下面的
 
@@ -158,12 +158,57 @@ struct TYPerson {
 
 执行 display 函数要去代码区找代码,而`m_id`等存在栈空间,就是代码区的代码要访问栈空间的东西,所以,将 person 对象的地址值传给 display 这个函数就好了.
 
-一个应用在内存中的分区:
+##### 汇编分析 this
+
+用 `person` 对象调用 `display` 函数.
+
+- `this`就是指向 `TYPerson`对象的指针
+- `this`里面存储的就是`person`对象的地址值.
+
+```c++
+TYPerson person;
+person.display();
+```
+
+```c
+// ecx 存 person 对象的地址值
+lea ecx, [ebp-14h]
+// call display 函数,然后进入这个 call 00F0145B 看一下
+call 00F0145B
+```
+
+进入`call 00F0145B`观察:
+
+```c
+TYPerson::display:
+...
+```
+
+```c
+// this->m_id = 5;
+mov eax,dword ptr [this]
+mov dword ptr [eax],5
+
+// this->m_age = 6;
+mov eax,dword ptr [this]
+mov dword ptr [eax+4], 6
+
+// this->m_height = 7;
+mov eax, dword ptr [this]
+mov dword ptr [eax+8],7
+```
+
+#### 一个应用在内存中的分区:
 
 - 栈空间
+    - 每调用一个函数就会给它分配一段连续的栈空间,等函数调用完毕后会自动回收这段栈空间.
+    - 自动分配和回收. 
 - 堆空间
+    - 需要主动去申请和释放. 
 - 代码区
-- 全局区
+    - 用来存放代码 
+- 全局区(数据段)
+    - 用来存放全局变量等. 
 
 
     
