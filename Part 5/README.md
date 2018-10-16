@@ -276,6 +276,33 @@ TYPerson *p = (TYPerson *)malloc(sizeof(TYPerson));
 所以说`new`比`malloc`多做了很多事情,主动调用构造函数就是其中一项.
 
 - 默认情况下,当我们没有写构造函数的时候,编译器在`某些特定的情况下`,才会为类生成空的无参的构造函数.
-- 注意,不是所有情况都会生成!
+    - 注意,不是所有情况都会生成!
 
+#### 默认情况下,成员变量的初始化操作
+
+
+```c++
+struct TYPerson {
+    int m_age;
+};
+
+// 全局区 (成员变量初始化为0)
+TYPerson g_p1;
+
+int main() {
+    // 栈空间 (成员变量不会被初始化)
+    TYPerson p1;
+    
+    // 堆空间
+    TYPerson *p2 = new TYPerson;             // 成员变量不会被初始化
+    TYPerson *p3 = new TYPerson();           // 成员变量初始化为0
+    TYPerson *p4 = new TYPerson[3];          // 成员变量不会被初始化
+    TYPerson *p5 = new TYPerson[3]();        // 3个 TYPerson 对象的成员变量都初始化为0
+    TYPerson *p6 = new TYPerson[3]{};        // 3个 TYPerson 对象的成员变量都初始化为0
+    
+    return 0;
+}
+```
+
+#### 自定义构造函数的情况下, 除了全局区,其他内存空间的成员变量默认都不会被初始化,需要开发人员手动初始化.
 
